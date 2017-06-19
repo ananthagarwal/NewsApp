@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">News</string>
+    <string name="facebook_app_id">224018098109134</string>
+    <string name="fb_login_protocol_scheme">fb224018098109134</string>
+    <string name="com.twitter.sdk.android.CONSUMER_KEY">8offNEtRlkvLzjzg7mb7HKKmS</string>
+    <string name="com.twitter.sdk.android.CONSUMER_SECRET">TCyar7WDr0JEXm4zBQ36BIUpo3g6RHbCyFIJHYUxIfnMdHu5Qv</string>
+</resources>
