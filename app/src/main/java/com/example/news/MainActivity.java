@@ -13,6 +13,19 @@ import com.twitter.sdk.android.core.TwitterCore;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterLoginButton;
+import com.twitter.sdk.android.core.models.Tweet;
+import com.twitter.sdk.android.core.services.StatusesService;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
+import retrofit2.Call;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -21,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     TwitterLoginButton loginButton;
     TwitterSession twitterSession;
     TwitterApiClient twitterApiClient;
+    String token; String secret;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,8 +50,32 @@ public class MainActivity extends AppCompatActivity {
                 twitterSession = TwitterCore.getInstance().getSessionManager().getActiveSession();
                 TwitterAuthToken authToken = twitterSession.getAuthToken();
                 Log.d(TAG, "Username " + twitterSession.getUserName());
-                String token = authToken.token;
-                String secret = authToken.secret;
+                token = authToken.token;
+                secret = authToken.secret;
+
+                try{
+                    URL url = new URL("https://api.twitter.com/1.1/trends/place.json?id=1");
+                    HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+                    httpURLConnection.setRequestMethod("GET");
+                    httpURLConnection.setRequestProperty("Authorization", token);
+                    httpURLConnection.setRequestProperty("Content-Type", "application/json");
+                    httpURLConnection.connect();
+
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
+                    StringBuilder response = new StringBuilder();
+                    String line;
+                    while ((line = bufferedReader.readLine()) != null) {
+                        response.append(response);
+                    }
+                    Log.d(TAG,
+                            "GET response code: "
+                                    + String.valueOf(httpURLConnection
+                                    .getResponseCode()));
+                    Log.d(TAG, "JSON response: " + response.toString());
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
@@ -47,6 +85,9 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+
+
 
 
     }
