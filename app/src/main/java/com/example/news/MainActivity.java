@@ -30,7 +30,7 @@ import retrofit2.Call;
 
 public class MainActivity extends AppCompatActivity {
 
-    public String TAG = "Main Activity";
+    public String TAG = "Twitter Main Activity";
     TwitterLoginButton loginButton;
     TwitterSession twitterSession;
     TwitterApiClient twitterApiClient;
@@ -52,8 +52,10 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "Username " + twitterSession.getUserName());
                 token = authToken.token;
                 secret = authToken.secret;
+                Log.d(TAG, token);
+                Log.d(TAG, secret);
 
-                try{
+                try {
                     URL url = new URL("https://api.twitter.com/1.1/trends/place.json?id=1");
                     HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
                     httpURLConnection.setRequestMethod("GET");
@@ -64,8 +66,10 @@ public class MainActivity extends AppCompatActivity {
                     BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
                     StringBuilder response = new StringBuilder();
                     String line;
+
                     while ((line = bufferedReader.readLine()) != null) {
-                        response.append(response);
+                        response.append(line);
+                        Log.d(TAG, line);
                     }
                     Log.d(TAG,
                             "GET response code: "
