@@ -57,25 +57,6 @@ public class MainActivity extends AppCompatActivity {
                 token = authToken.token;
                 secret = authToken.secret;
 
-                Log.d(TAG, token);
-                Log.d(TAG, secret);
-                String consumerKey = "8offNEtRlkvLzjzg7mb7HKKmS";
-                String nonce = "kYjzDWR8Y0ZFnhxSebBDvY3uYSQ2pwgmaeew2VS4dg";
-                String signature = "GET&https%3A%2F%2Fapi.twitter.com%2F1.1%2Ftrends%2Fplace.json&id%3D1%26" +
-                        "oauth_consumer_key%3D8offNEtRlkvLzjzg7mb7HKKmS%26oauth_nonce%3DkYjzDWR8Y0ZFnhxSebBDvY3uYSQ2pwgmaeew2VS4dg" +
-                        "%26oauth_signature_method%3DHMAC-SHA1%26oauth_timestamp%3D1501381586%26oauth_token%3D"+token+"%26oauth_version" +
-                        "%3D1.0"; //Signature is complete
-                String signatureMethod = "HMAC-SHA1";
-                String signingKey = "TCyar7WDr0JEXm4zBQ36BIUpo3g6RHbCyFIJHYUxIfnMdHu5Qv&" + secret;
-                String timestamp = "1501381586";
-                String version = "1.0";
-                String parameterstring = "id=1&oauth_consumer_key=8offNEtRlkvLzjzg7mb7HKKmS&oauth_nonce=" +
-                        "kYjzDWR8Y0ZFnhxSebBDvY3uYSQ2pwgmaeew2VS4dg&oauth_signature_method=HMAC-SHA1&oauth_timestamp=" +
-                        "1501381586&oauth_token="+token+"&oauth_version=1.0";
-                String oauthsig = Base64.encodeToString(HmacUtils.hmacSha1(signingKey, signature), Base64.DEFAULT);
-                Log.d(TAG, token + " " + secret);
-                Log.d(TAG, oauthsig);
-                String sig = "1lrJjo2Fa+lhwBe5kAopWGnhmq4=";
 
                 header = "OAuth oauth_consumer_key=\"8offNEtRlkvLzjzg7mb7HKKmS\", oauth_nonce=\"kYjzDWR8Y0ZFnhxSebBDvY3uYSQ2pwgmaeew2VS4dg" +
                         "\", oauth_signature=\"1lrJjo2Fa%2BlhwBe5kAopWGnhmq4%3D\", oauth_signature_method=\"HMAC-SHA1\", oauth_timestamp" +
@@ -92,11 +73,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
-
-
-
-
+        
 
     }
 
@@ -143,3 +120,24 @@ public class MainActivity extends AppCompatActivity {
         loginButton.onActivityResult(requestCode, resultCode, data);
     }
 }
+
+
+/* Method for obtaining Twitter trend information:
+
+String consumerKey = "8offNEtRlkvLzjzg7mb7HKKmS";
+                String nonce = "kYjzDWR8Y0ZFnhxSebBDvY3uYSQ2pwgmaeew2VS4dg";
+                String signature = "GET&https%3A%2F%2Fapi.twitter.com%2F1.1%2Ftrends%2Fplace.json&id%3D1%26" +
+                        "oauth_consumer_key%3D8offNEtRlkvLzjzg7mb7HKKmS%26oauth_nonce%3DkYjzDWR8Y0ZFnhxSebBDvY3uYSQ2pwgmaeew2VS4dg" +
+                        "%26oauth_signature_method%3DHMAC-SHA1%26oauth_timestamp%3D1501381586%26oauth_token%3D"+token+"%26oauth_version" +
+                        "%3D1.0"; //Signature is complete
+                String signatureMethod = "HMAC-SHA1";
+                String signingKey = "TCyar7WDr0JEXm4zBQ36BIUpo3g6RHbCyFIJHYUxIfnMdHu5Qv&" + secret;
+                String timestamp = "1501381586";
+                String version = "1.0";
+                String parameterstring = "id=1&oauth_consumer_key=8offNEtRlkvLzjzg7mb7HKKmS&oauth_nonce=" +
+                        "kYjzDWR8Y0ZFnhxSebBDvY3uYSQ2pwgmaeew2VS4dg&oauth_signature_method=HMAC-SHA1&oauth_timestamp=" +
+                        "1501381586&oauth_token="+token+"&oauth_version=1.0";
+                String oauthsig = Base64.encodeToString(HmacUtils.hmacSha1(signingKey, signature), Base64.DEFAULT);
+                ;
+                String sig = "1lrJjo2Fa+lhwBe5kAopWGnhmq4=";
+ */
