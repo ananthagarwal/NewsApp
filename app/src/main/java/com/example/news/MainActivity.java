@@ -7,6 +7,7 @@ import android.os.Bundle;
 
 import android.util.Base64;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
@@ -20,12 +21,16 @@ import com.twitter.sdk.android.core.models.Tweet;
 import com.twitter.sdk.android.core.services.StatusesService;
 
 import org.apache.commons.codec.digest.HmacUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 
 import retrofit2.Call;
 
@@ -39,12 +44,16 @@ public class MainActivity extends AppCompatActivity {
     TwitterApiClient twitterApiClient;
     String token; String secret; String header;
     String url = "https://api.twitter.com/1.1/trends/place.json?id=1";
+    JSONObject twitterTrendsObj;
+    ArrayList<TrendingObj> trendingObjArrayList;
+    TextView textView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        textView = (TextView) findViewById(R.id.trend);
         loginButton = (TwitterLoginButton) findViewById(R.id.twitter_login_button);
         loginButton.setCallback(new Callback<TwitterSession>() {
             @Override
@@ -63,6 +72,8 @@ public class MainActivity extends AppCompatActivity {
                         "=\"1501381586\", oauth_token=\"" + token + "\", oauth_version=\"1.0\"";
 
                 new RetrieveTwitterTrend().execute(url);
+
+
             }
 
             @Override
@@ -73,7 +84,19 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        
+
+    }
+
+    public void parseTwitterTrending() throws JSONException {
+        JSONArray trendingObjects = twitterTrendsObj.getJSONArray("trends");
+        for (int i = 0; i < trendingObjects.length(); i++) {
+            JSONObject trendingObj = trendingObjects.getJSONObject(i);
+            TrendingObj trending = new TrendingObj(trendingObj.getString("name"), trendingObj.getString("url"),
+                    trendingObj.getString("promoted_content"), trendingObj.getString("query"),
+                    Integer.toString(trendingObj.getInt("tweet_volume")));
+            trendingObjArrayList.add(trending);
+            textView.append(trendingObj.getString("name"));
+        }
 
     }
 
@@ -94,19 +117,17 @@ public class MainActivity extends AppCompatActivity {
 
                 while ((line = bufferedReader.readLine()) != null) {
                     response.append(line);
-                    Log.d(TAG, line);
                 }
-                Log.d(TAG,
-                        "GET response code: "
-                                + String.valueOf(httpURLConnection
-                                .getResponseCode()));
+                Log.d(TAG, "GET response code: " + String.valueOf(httpURLConnection.getResponseCode()));
                 Log.d(TAG, "JSON response: " + response.toString());
+                twitterTrendsObj = new JSONObject(response.toString());
                 return true;
 
             } catch (Exception e) {
                 e.printStackTrace();
                 return false;
             }
+
 
 
         }
