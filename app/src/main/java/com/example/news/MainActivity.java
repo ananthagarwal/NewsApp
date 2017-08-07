@@ -31,6 +31,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import retrofit2.Call;
 
@@ -38,20 +39,23 @@ import retrofit2.Call;
 public class MainActivity extends AppCompatActivity {
 
     public String TAG = "Twitter Main Activity";
-
+    HashMap<String, String> percentEncoding;
     TwitterLoginButton loginButton;
     TwitterSession twitterSession;
     TwitterApiClient twitterApiClient;
     String token; String secret; String header;
     String url = "https://api.twitter.com/1.1/trends/place.json?id=1";
     JSONObject twitterTrendsObj;
-    ArrayList<TrendingObj> trendingObjArrayList;
+    ArrayList<TrendingObj> trendingObjArrayList = new ArrayList<>();
     TextView textView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        generateHashMap();
+
 
         textView = (TextView) findViewById(R.id.trend);
         loginButton = (TwitterLoginButton) findViewById(R.id.twitter_login_button);
@@ -66,10 +70,8 @@ public class MainActivity extends AppCompatActivity {
                 token = authToken.token;
                 secret = authToken.secret;
 
+                header = accessRestAPI(url);
 
-                header = "OAuth oauth_consumer_key=\"8offNEtRlkvLzjzg7mb7HKKmS\", oauth_nonce=\"kYjzDWR8Y0ZFnhxSebBDvY3uYSQ2pwgmaeew2VS4dg" +
-                        "\", oauth_signature=\"1lrJjo2Fa%2BlhwBe5kAopWGnhmq4%3D\", oauth_signature_method=\"HMAC-SHA1\", oauth_timestamp" +
-                        "=\"1501381586\", oauth_token=\"" + token + "\", oauth_version=\"1.0\"";
 
                 new RetrieveTwitterTrend().execute(url);
 
@@ -87,15 +89,70 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
+
+    private void generateHashMap() {
+        percentEncoding = new HashMap<>();
+        percentEncoding.put(" ", "%20"); percentEncoding.put("!", "%21"); percentEncoding.put("\"", "%22");
+        percentEncoding.put("#", "%23"); percentEncoding.put("$", "%24"); percentEncoding.put("%", "%25");
+        percentEncoding.put("&", "%26"); percentEncoding.put("'", "%27"); percentEncoding.put("(", "%28");
+        percentEncoding.put(")", "%29"); percentEncoding.put("*", "%2A"); percentEncoding.put("+", "%2B");
+        percentEncoding.put(",", "%2C"); percentEncoding.put("-", "%2D"); percentEncoding.put(".", "%2E");
+        percentEncoding.put("/", "%2F");
+    }
+
+    private String percentEncode(String original) {
+        String answer = "";
+        for (int i = 0; i < original.length(); i++) {
+            if (percentEncoding.containsKey(original.charAt(i))) {
+                answer = answer + percentEncoding.get(original.charAt(i));
+            } else {
+                answer = answer + original.charAt(i);
+            }
+        }
+        return answer;
+    }
+
+    private String accessRestAPI(String url) {
+
+        String unixTime = Long.toString(System.currentTimeMillis() / 1000L);
+        String consumerKey = getString(R.string.com_twitter_sdk_android_CONSUMER_KEY);
+        String nonce = "kYjzNBV8Y0ZFnhxSebBDvY3uYSQ2iaomaeew2VS4dg";
+        String signature = "GET&https%3A%2F%2Fapi.twitter.com%2F1.1%2Ftrends%2Fplace.json&id%3D1%26" +
+                "oauth_consumer_key%3D"+ consumerKey +"%26oauth_nonce%3D" + nonce +
+                "%26oauth_signature_method%3DHMAC-SHA1%26oauth_timestamp%3D"+ unixTime +"%26oauth_token%3D"+ token +"%26oauth_version" +
+                "%3D1.0"; //Signature is complete
+
+        String signingKey = "TCyar7WDr0JEXm4zBQ36BIUpo3g6RHbCyFIJHYUxIfnMdHu5Qv&" + secret;
+        String oauthsig = Base64.encodeToString(HmacUtils.hmacSha1(signingKey, signature), Base64.DEFAULT);
+        Log.d(TAG, oauthsig);
+        String head = "OAuth oauth_consumer_key=\""+consumerKey+"\", oauth_nonce=\"" + nonce +
+                "\", oauth_signature=\"" + oauthsig + "\", oauth_signature_method=\"HMAC-SHA1\", oauth_timestamp" +
+                "=\"" + unixTime + "\", oauth_token=\"" + token + "\", oauth_version=\"1.0\"";
+
+        return head;
+    }
+
     public void parseTwitterTrending() throws JSONException {
         JSONArray trendingObjects = twitterTrendsObj.getJSONArray("trends");
         for (int i = 0; i < trendingObjects.length(); i++) {
-            JSONObject trendingObj = trendingObjects.getJSONObject(i);
+            final JSONObject trendingObj = trendingObjects.getJSONObject(i);
+            final String temp = (String) trendingObj.get("name");
             TrendingObj trending = new TrendingObj(trendingObj.getString("name"), trendingObj.getString("url"),
                     trendingObj.getString("promoted_content"), trendingObj.getString("query"),
                     Integer.toString(trendingObj.getInt("tweet_volume")));
             trendingObjArrayList.add(trending);
-            textView.append(trendingObj.getString("name"));
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        textView.append(trendingObj.getString("name") + "\n");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            });
         }
 
     }
@@ -120,16 +177,15 @@ public class MainActivity extends AppCompatActivity {
                 }
                 Log.d(TAG, "GET response code: " + String.valueOf(httpURLConnection.getResponseCode()));
                 Log.d(TAG, "JSON response: " + response.toString());
-                twitterTrendsObj = new JSONObject(response.toString());
+                String httpresponse = response.substring(1, response.length() - 1);
+                twitterTrendsObj = new JSONObject(httpresponse);
+                parseTwitterTrending();
                 return true;
 
             } catch (Exception e) {
                 e.printStackTrace();
                 return false;
             }
-
-
-
         }
     }
 
@@ -143,22 +199,6 @@ public class MainActivity extends AppCompatActivity {
 }
 
 
-/* Method for obtaining Twitter trend information:
 
-String consumerKey = "8offNEtRlkvLzjzg7mb7HKKmS";
-                String nonce = "kYjzDWR8Y0ZFnhxSebBDvY3uYSQ2pwgmaeew2VS4dg";
-                String signature = "GET&https%3A%2F%2Fapi.twitter.com%2F1.1%2Ftrends%2Fplace.json&id%3D1%26" +
-                        "oauth_consumer_key%3D8offNEtRlkvLzjzg7mb7HKKmS%26oauth_nonce%3DkYjzDWR8Y0ZFnhxSebBDvY3uYSQ2pwgmaeew2VS4dg" +
-                        "%26oauth_signature_method%3DHMAC-SHA1%26oauth_timestamp%3D1501381586%26oauth_token%3D"+token+"%26oauth_version" +
-                        "%3D1.0"; //Signature is complete
-                String signatureMethod = "HMAC-SHA1";
-                String signingKey = "TCyar7WDr0JEXm4zBQ36BIUpo3g6RHbCyFIJHYUxIfnMdHu5Qv&" + secret;
-                String timestamp = "1501381586";
-                String version = "1.0";
-                String parameterstring = "id=1&oauth_consumer_key=8offNEtRlkvLzjzg7mb7HKKmS&oauth_nonce=" +
-                        "kYjzDWR8Y0ZFnhxSebBDvY3uYSQ2pwgmaeew2VS4dg&oauth_signature_method=HMAC-SHA1&oauth_timestamp=" +
-                        "1501381586&oauth_token="+token+"&oauth_version=1.0";
-                String oauthsig = Base64.encodeToString(HmacUtils.hmacSha1(signingKey, signature), Base64.DEFAULT);
-                ;
-                String sig = "1lrJjo2Fa+lhwBe5kAopWGnhmq4=";
- */
+
+
