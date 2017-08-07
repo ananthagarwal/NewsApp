@@ -9,9 +9,9 @@ public class TrendingObj {
     String url;
     String promotedContent;
     String query;
-    String tweetVolume;
+    int tweetVolume;
 
-    public TrendingObj(String n, String u, String p, String q, String tv){
+    public TrendingObj(String n, String u, String p, String q, int tv){
         name = n; url = u; promotedContent = p; query = q; tweetVolume = tv;
     }
 
@@ -27,7 +27,7 @@ public class TrendingObj {
         return query;
     }
 
-    public String getTweetVolume() {
+    public int getTweetVolume() {
         return tweetVolume;
     }
 

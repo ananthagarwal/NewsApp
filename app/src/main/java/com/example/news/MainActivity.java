@@ -139,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
             final String temp = (String) trendingObj.get("name");
             TrendingObj trending = new TrendingObj(trendingObj.getString("name"), trendingObj.getString("url"),
                     trendingObj.getString("promoted_content"), trendingObj.getString("query"),
-                    Integer.toString(trendingObj.getInt("tweet_volume")));
+                   trendingObj.getInt("tweet_volume"));
             trendingObjArrayList.add(trending);
             runOnUiThread(new Runnable() {
                 @Override
