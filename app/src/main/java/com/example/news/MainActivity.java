@@ -17,8 +17,6 @@ import com.twitter.sdk.android.core.TwitterCore;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterLoginButton;
-import com.twitter.sdk.android.core.models.Tweet;
-import com.twitter.sdk.android.core.services.StatusesService;
 
 import org.apache.commons.codec.digest.HmacUtils;
 import org.json.JSONArray;
@@ -26,20 +24,17 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import retrofit2.Call;
-
 
 public class MainActivity extends AppCompatActivity {
 
     public String TAG = "Twitter Main Activity";
-    HashMap<String, String> percentEncoding;
+    HashMap<Character, String> percentEncoding;
     TwitterLoginButton loginButton;
     TwitterSession twitterSession;
     TwitterApiClient twitterApiClient;
@@ -93,16 +88,17 @@ public class MainActivity extends AppCompatActivity {
 
     private void generateHashMap() {
         percentEncoding = new HashMap<>();
-        percentEncoding.put(" ", "%20"); percentEncoding.put("!", "%21"); percentEncoding.put("\"", "%22");
-        percentEncoding.put("#", "%23"); percentEncoding.put("$", "%24"); percentEncoding.put("%", "%25");
-        percentEncoding.put("&", "%26"); percentEncoding.put("'", "%27"); percentEncoding.put("(", "%28");
-        percentEncoding.put(")", "%29"); percentEncoding.put("*", "%2A"); percentEncoding.put("+", "%2B");
-        percentEncoding.put(",", "%2C"); percentEncoding.put("-", "%2D"); percentEncoding.put(".", "%2E");
-        percentEncoding.put("/", "%2F");
+        percentEncoding.put(' ', "%20"); percentEncoding.put('!', "%21"); percentEncoding.put('\"', "%22");
+        percentEncoding.put('#', "%23"); percentEncoding.put('$', "%24"); percentEncoding.put('%', "%25");
+        percentEncoding.put('&', "%26"); percentEncoding.put('\'', "%27"); percentEncoding.put('(', "%28");
+        percentEncoding.put(')', "%29"); percentEncoding.put('*', "%2A"); percentEncoding.put('+', "%2B");
+        percentEncoding.put(',', "%2C"); percentEncoding.put('-', "%2D"); percentEncoding.put('.', "%2E");
+        percentEncoding.put('/', "%2F"); percentEncoding.put('=', "%3D");
     }
 
     private String percentEncode(String original) {
         String answer = "";
+        original = original.substring(0, original.length() - 1);
         for (int i = 0; i < original.length(); i++) {
             if (percentEncoding.containsKey(original.charAt(i))) {
                 answer = answer + percentEncoding.get(original.charAt(i));
@@ -125,6 +121,9 @@ public class MainActivity extends AppCompatActivity {
 
         String signingKey = "TCyar7WDr0JEXm4zBQ36BIUpo3g6RHbCyFIJHYUxIfnMdHu5Qv&" + secret;
         String oauthsig = Base64.encodeToString(HmacUtils.hmacSha1(signingKey, signature), Base64.DEFAULT);
+        Log.d(TAG, oauthsig);
+        Log.d(TAG, Integer.toString(oauthsig.length()));
+        oauthsig = percentEncode(oauthsig);
         Log.d(TAG, oauthsig);
         String head = "OAuth oauth_consumer_key=\""+consumerKey+"\", oauth_nonce=\"" + nonce +
                 "\", oauth_signature=\"" + oauthsig + "\", oauth_signature_method=\"HMAC-SHA1\", oauth_timestamp" +
