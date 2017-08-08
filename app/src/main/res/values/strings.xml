@@ -4,4 +4,13 @@
     <string name="fb_login_protocol_scheme">fb224018098109134</string>
     <string name="com.twitter.sdk.android.CONSUMER_KEY">8offNEtRlkvLzjzg7mb7HKKmS</string>
     <string name="com.twitter.sdk.android.CONSUMER_SECRET">TCyar7WDr0JEXm4zBQ36BIUpo3g6RHbCyFIJHYUxIfnMdHu5Qv</string>
+    <string name="NEWS_API_KEY">1ee07b935e3145039b09ca71535421a0</string>
+
+    <string-array name="priorities">
+        <item>Very Low - Remove</item>
+        <item>Low</item>
+        <item>Neutral</item>
+        <item>High</item>
+        <item>Very High</item>
+    </string-array>
 </resources>

@@ -66,11 +66,7 @@ public class MainActivity extends AppCompatActivity {
                 secret = authToken.secret;
 
                 header = accessRestAPI(url);
-
-
                 new RetrieveTwitterTrend().execute(url);
-
-
             }
 
             @Override
@@ -80,11 +76,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
-
     }
-
-
 
     private void generateHashMap() {
         percentEncoding = new HashMap<>();
@@ -138,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
             final JSONObject trendingObj = trendingObjects.getJSONObject(i);
             final String temp = (String) trendingObj.get("name");
             TrendingObj trending = new TrendingObj(trendingObj.getString("name"), trendingObj.getString("url"),
-                    trendingObj.getString("promoted_content"), trendingObj.getString("query"),
+                   trendingObj.getString("promoted_content"), trendingObj.getString("query"),
                    trendingObj.getInt("tweet_volume"));
             trendingObjArrayList.add(trending);
             runOnUiThread(new Runnable() {
