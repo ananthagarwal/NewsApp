@@ -1,5 +1,7 @@
 package com.example.news;
 
+import android.graphics.drawable.Drawable;
+
 /**
  * Created by ananthagarwal on 8/7/17.
  */
@@ -27,5 +29,13 @@ public class NewsSource {
 
     public boolean isSelected() {
         return selected;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getLogoLink() {
+        return logoLink;
     }
 }

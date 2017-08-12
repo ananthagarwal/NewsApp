@@ -1,15 +1,20 @@
 package com.example.news;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 /**
@@ -22,6 +27,7 @@ public class NewsSelectionCustomAdapter extends ArrayAdapter<NewsSource> impleme
     private Context mContext;
     private static LayoutInflater inflater = null;
     private NewsSelection newsSelection;
+    ArrayAdapter<CharSequence> arrayAdapter;
 
     public static class ViewHolder {
         ImageView newsLogo;
@@ -34,6 +40,8 @@ public class NewsSelectionCustomAdapter extends ArrayAdapter<NewsSource> impleme
         dataBase = data;
         mContext = context;
         newsSelection = news;
+        arrayAdapter = ArrayAdapter.createFromResource(context,
+                R.array.priorities, android.R.layout.simple_spinner_item);
     }
 
     @Override
@@ -42,13 +50,9 @@ public class NewsSelectionCustomAdapter extends ArrayAdapter<NewsSource> impleme
         int position = (int) view.getTag();
         NewsSource item = (NewsSource) getItem(position);
 
+
         switch (view.getId()) {
-            case R.id.item_infobutton:
-                if (purchaseActivity != null) {
-                    purchaseActivity.editItem(view, item);
-                } else {
-                    returnActivity.editItem(view, item);
-                }
+            case R.id.newsPriority:
                 break;
 
         }
@@ -58,30 +62,29 @@ public class NewsSelectionCustomAdapter extends ArrayAdapter<NewsSource> impleme
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        Item item = getItem(position);
+        NewsSource newsSource = getItem(position);
         ViewHolder viewHolder;
         final View result;
         if (convertView == null) {
             viewHolder = new ViewHolder();
             inflater = LayoutInflater.from(getContext());
             convertView = inflater.inflate(R.layout.row_item, parent, false);
-            viewHolder.name = (TextView) convertView.findViewById(R.id.name);
-            viewHolder.store = (TextView) convertView.findViewById(R.id.location);
-            viewHolder.image = (ImageView) convertView.findViewById(R.id.itemImage);
-            viewHolder.info = (ImageView) convertView.findViewById(R.id.item_infobutton);
+            viewHolder.newsSourceName = (TextView) convertView.findViewById(R.id.newsSource);
+            viewHolder.priority = (Spinner) convertView.findViewById(R.id.newsPriority);
+            viewHolder.newsLogo = (ImageView) convertView.findViewById(R.id.newsLogo);
             result = convertView;
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
             result = convertView;
         }
-        viewHolder.name.setText(item.getName());
-        viewHolder.image.setImageBitmap(BitmapFactory.decodeFile(item.getImage()));
-        viewHolder.store.setText(item.getStore());
-        viewHolder.info.setOnClickListener(this);
-        viewHolder.info.setTag(position);
+        viewHolder.newsSourceName.setText(newsSource.getName());
+        viewHolder.newsLogo.setImageResource(getContext().getResources()
+                .getIdentifier(newsSource.getLogoLink(),"drawable", getContext().getPackageName()));
+        viewHolder.priority.setAdapter(arrayAdapter);
 
         return convertView;
 
     }
+
 }

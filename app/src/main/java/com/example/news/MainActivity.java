@@ -7,6 +7,8 @@ import android.os.Bundle;
 
 import android.util.Base64;
 import android.util.Log;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.twitter.sdk.android.core.Callback;
@@ -29,6 +31,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -44,6 +47,8 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<TrendingObj> trendingObjArrayList = new ArrayList<>();
     TextView textView;
 
+    ListView listView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,7 +57,10 @@ public class MainActivity extends AppCompatActivity {
         generateHashMap();
 
 
-        textView = (TextView) findViewById(R.id.trend);
+
+        listView = (ListView) findViewById(R.id.trend);
+        //This line is wrong
+        // listView.setAdapter(new NewsSelectionCustomAdapter(trendingObjArrayList, this, new NewsSelection()));
         loginButton = (TwitterLoginButton) findViewById(R.id.twitter_login_button);
         loginButton.setCallback(new Callback<TwitterSession>() {
             @Override
@@ -129,9 +137,15 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < trendingObjects.length(); i++) {
             final JSONObject trendingObj = trendingObjects.getJSONObject(i);
             final String temp = (String) trendingObj.get("name");
+            int tweetVolume;
+            if (!(trendingObj.get("tweet_volume") instanceof Integer)) {
+                tweetVolume = 0;
+            } else {
+                tweetVolume = trendingObj.getInt("tweet_volume");
+            }
             TrendingObj trending = new TrendingObj(trendingObj.getString("name"), trendingObj.getString("url"),
                    trendingObj.getString("promoted_content"), trendingObj.getString("query"),
-                   trendingObj.getInt("tweet_volume"));
+                   tweetVolume);
             trendingObjArrayList.add(trending);
             runOnUiThread(new Runnable() {
                 @Override

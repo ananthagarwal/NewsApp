@@ -13,4 +13,55 @@
         <item>High</item>
         <item>Very High</item>
     </string-array>
+
+    <string-array name="newsSources">
+        <item>ABC News (AU)</item>
+        <item>Associated Press</item>
+        <item>BBC News</item>
+        <item>Bloomberg</item>
+        <item>Breitbart News</item>
+        <item>Business Insider</item>
+        <item>CNBC</item>
+        <item>CNN</item>
+        <item>Daily Mail</item>
+        <item>Entertainment Weekly</item>
+        <item>ESPN</item>
+        <item>Fox Sports</item>
+        <item>Google News</item>
+        <item>Independent</item>
+        <item>National Geographic</item>
+        <item>Reuters</item>
+        <item>The Economist</item>
+        <item>The Huffington Post</item>
+        <item>The New York Times</item>
+        <item>The Wall Street Journal</item>
+        <item>The Washington Post</item>
+        <item>USA Today</item>
+    </string-array>
+
+    <string-array name="newsLogos">
+        <item>abc</item>
+        <item>ap</item>
+        <item>bbc</item>
+        <item>bloomberg</item>
+        <item>breitbart</item>
+        <item>business</item>
+        <item>cnbc</item>
+        <item>cnn</item>
+        <item>dailymail</item>
+        <item>ew</item>
+        <item>espn</item>
+        <item>foxsports</item>
+        <item>google</item>
+        <item>independent</item>
+        <item>natgeo</item>
+        <item>reuters</item>
+        <item>economist</item>
+        <item>huffpost</item>
+        <item>nytimes</item>
+        <item>wsj</item>
+        <item>washpost</item>
+        <item>usatoday</item>
+    </string-array>
+
 </resources>

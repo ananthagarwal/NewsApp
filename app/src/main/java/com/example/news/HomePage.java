@@ -27,7 +27,7 @@ public class HomePage extends AppCompatActivity {
     }
 
     public void getStarted(View view) {
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, NewsSelection.class);
         startActivity(intent);
 
     }
