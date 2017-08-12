@@ -27,8 +27,8 @@ public class TrendingObj {
         return query;
     }
 
-    public int getTweetVolume() {
-        return tweetVolume;
+    public String getTweetVolume() {
+        return Integer.toString(tweetVolume);
     }
 
     public String getUrl() {

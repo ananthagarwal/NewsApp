@@ -17,6 +17,7 @@ public class NewsSource {
         this.name = name;
         this.logoLink = logoLink;
         selected = false;
+        priority = 0;
     }
 
     public void setSelected(boolean selected) {

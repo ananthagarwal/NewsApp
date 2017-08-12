@@ -7,6 +7,7 @@ import android.os.Bundle;
 
 import android.util.Base64;
 import android.util.Log;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -45,7 +46,10 @@ public class MainActivity extends AppCompatActivity {
     String url = "https://api.twitter.com/1.1/trends/place.json?id=1";
     JSONObject twitterTrendsObj;
     ArrayList<TrendingObj> trendingObjArrayList = new ArrayList<>();
-    TextView textView;
+    TextView encourage;
+    TrendingSelectionCustomAdapter trendingSelectionCustomAdapter;
+
+    static final int SELECT_NEWS = 1;
 
     ListView listView;
 
@@ -56,17 +60,21 @@ public class MainActivity extends AppCompatActivity {
 
         generateHashMap();
 
-
-
+        encourage = (TextView) findViewById(R.id.logInEncourage);
         listView = (ListView) findViewById(R.id.trend);
-        //This line is wrong
-        // listView.setAdapter(new NewsSelectionCustomAdapter(trendingObjArrayList, this, new NewsSelection()));
+        listView.setVisibility(View.INVISIBLE);
         loginButton = (TwitterLoginButton) findViewById(R.id.twitter_login_button);
+        trendingSelectionCustomAdapter = new TrendingSelectionCustomAdapter(trendingObjArrayList,
+                getApplicationContext(), this);
+        listView.setAdapter(trendingSelectionCustomAdapter);
+
         loginButton.setCallback(new Callback<TwitterSession>() {
             @Override
             public void success(Result<TwitterSession> result) {
                 // Do something with result, which provides a TwitterSession for making API calls
                 Log.d(TAG, "Twitter login successful");
+                encourage.setVisibility(View.INVISIBLE);
+                listView.setVisibility(View.VISIBLE);
                 twitterSession = TwitterCore.getInstance().getSessionManager().getActiveSession();
                 TwitterAuthToken authToken = twitterSession.getAuthToken();
                 Log.d(TAG, "Username " + twitterSession.getUserName());
@@ -107,6 +115,11 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return answer;
+    }
+
+    public void selectNews(View view) {
+        Intent intent = new Intent(this, NewsSelection.class);
+        startActivityForResult(intent, SELECT_NEWS);
     }
 
     private String accessRestAPI(String url) {
@@ -150,11 +163,7 @@ public class MainActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    try {
-                        textView.append(trendingObj.getString("name") + "\n");
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+                    trendingSelectionCustomAdapter.notifyDataSetChanged();
 
                 }
             });
@@ -185,6 +194,7 @@ public class MainActivity extends AppCompatActivity {
                 String httpresponse = response.substring(1, response.length() - 1);
                 twitterTrendsObj = new JSONObject(httpresponse);
                 parseTwitterTrending();
+                httpURLConnection.disconnect();
                 return true;
 
             } catch (Exception e) {

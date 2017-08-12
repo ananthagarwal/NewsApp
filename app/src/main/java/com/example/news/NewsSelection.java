@@ -2,6 +2,7 @@ package com.example.news;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -24,7 +25,6 @@ public class NewsSelection extends AppCompatActivity {
         newsSelectionListView = (ListView) findViewById(R.id.newsSelection);
         newsSelectionListView.setAdapter(adapter);
 
-
     }
 
     public ArrayList<NewsSource> initializeNewsSources() {
@@ -37,4 +37,8 @@ public class NewsSelection extends AppCompatActivity {
         }
         return result;
     }
-}
+
+    public void done(View view) {
+        finish();
+    }
+ }

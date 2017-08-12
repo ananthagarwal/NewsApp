@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.Spinner;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by ananthagarwal on 8/7/17.
@@ -28,6 +30,7 @@ public class NewsSelectionCustomAdapter extends ArrayAdapter<NewsSource> impleme
     private static LayoutInflater inflater = null;
     private NewsSelection newsSelection;
     ArrayAdapter<CharSequence> arrayAdapter;
+    HashMap<String, Integer> priorityMap;
 
     public static class ViewHolder {
         ImageView newsLogo;
@@ -42,6 +45,13 @@ public class NewsSelectionCustomAdapter extends ArrayAdapter<NewsSource> impleme
         newsSelection = news;
         arrayAdapter = ArrayAdapter.createFromResource(context,
                 R.array.priorities, android.R.layout.simple_spinner_item);
+        priorityMap = new HashMap<>();
+        priorityMap.put("Very Low - Remove", 0);
+        priorityMap.put("Low", 1);
+        priorityMap.put("Neutral", 2);
+        priorityMap.put("High", 3);
+        priorityMap.put("Very High", 4);
+
     }
 
     @Override
@@ -50,14 +60,19 @@ public class NewsSelectionCustomAdapter extends ArrayAdapter<NewsSource> impleme
         int position = (int) view.getTag();
         NewsSource item = (NewsSource) getItem(position);
 
-
         switch (view.getId()) {
             case R.id.newsPriority:
-                break;
 
         }
 
     }
+
+    public int matchPriority(String priority) {
+        return priorityMap.get(priority);
+    }
+
+
+
 
 
     @Override
@@ -79,12 +94,34 @@ public class NewsSelectionCustomAdapter extends ArrayAdapter<NewsSource> impleme
             result = convertView;
         }
         viewHolder.newsSourceName.setText(newsSource.getName());
-        viewHolder.newsLogo.setImageResource(getContext().getResources()
-                .getIdentifier(newsSource.getLogoLink(),"drawable", getContext().getPackageName()));
+        viewHolder.newsLogo.setImageResource(mContext.getResources()
+                .getIdentifier(newsSource.getLogoLink(),"drawable", mContext.getPackageName()));
         viewHolder.priority.setAdapter(arrayAdapter);
+        viewHolder.priority.setOnItemSelectedListener(new YourSpinnerListener(position));
 
         return convertView;
 
+    }
+
+    private class YourSpinnerListener implements AdapterView.OnItemSelectedListener {
+
+        private int mSpinnerPosition;
+
+        public YourSpinnerListener(int spinnerPosition) {
+            mSpinnerPosition = spinnerPosition;
+        }
+
+        @Override
+        public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+            NewsSource newsSource = getItem(mSpinnerPosition);
+            newsSource.setPriority((Integer) matchPriority((String) arg0.getItemAtPosition(arg2)));
+            newsSource.setSelected(true);
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> arg0) {
+
+        }
     }
 
 }
