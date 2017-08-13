@@ -5,6 +5,8 @@
     <string name="com.twitter.sdk.android.CONSUMER_KEY">8offNEtRlkvLzjzg7mb7HKKmS</string>
     <string name="com.twitter.sdk.android.CONSUMER_SECRET">TCyar7WDr0JEXm4zBQ36BIUpo3g6RHbCyFIJHYUxIfnMdHu5Qv</string>
     <string name="NEWS_API_KEY">1ee07b935e3145039b09ca71535421a0</string>
+    <string name="AYLIEN_API_KEY">aeeff373f480d5960e78474009358360</string>
+    <string name="AYLIEN_API_ID">5d4b553c</string>
 
     <string-array name="priorities">
         <item>Very Low - Remove</item>

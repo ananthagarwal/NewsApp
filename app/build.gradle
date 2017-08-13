@@ -34,6 +34,17 @@ dependencies {
     compile 'com.facebook.android:facebook-android-sdk:[4,5)'
     compile 'com.twitter.sdk.android:twitter:3.0.0'
     compile 'commons-codec:commons-codec:1.10'
-    compile "com.aylien.newsapi:client:0.4.0"
+    compile 'com.aylien.newsapi:client:0.4.0'
+
     testCompile 'junit:junit:4.12'
+
+
+}
+
+android{
+    packagingOptions {
+        pickFirst 'META-INF/INDEX.LIST'
+        pickFirst 'META-INF/LICENSE'
+        pickFirst 'META-INF/jersey-module-version'
+    }
 }
