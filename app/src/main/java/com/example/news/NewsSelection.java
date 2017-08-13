@@ -1,11 +1,13 @@
 package com.example.news;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class NewsSelection extends AppCompatActivity {
 
@@ -13,13 +15,14 @@ public class NewsSelection extends AppCompatActivity {
     String[] logoImages;
     NewsSelectionCustomAdapter adapter;
     ListView newsSelectionListView;
+    ArrayList<NewsSource> newsSources;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news_selection);
 
-        ArrayList<NewsSource> newsSources = initializeNewsSources();
+        newsSources = initializeNewsSources();
 
         adapter = new NewsSelectionCustomAdapter(newsSources, getApplicationContext(), this);
         newsSelectionListView = (ListView) findViewById(R.id.newsSelection);
@@ -39,6 +42,8 @@ public class NewsSelection extends AppCompatActivity {
     }
 
     public void done(View view) {
+        Collections.sort(newsSources);
+        NewsSource.setSortedNewsSources(newsSources);
         finish();
     }
  }

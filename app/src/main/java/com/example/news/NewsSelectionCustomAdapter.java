@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -99,6 +100,8 @@ public class NewsSelectionCustomAdapter extends ArrayAdapter<NewsSource> impleme
         viewHolder.priority.setAdapter(arrayAdapter);
         viewHolder.priority.setOnItemSelectedListener(new YourSpinnerListener(position));
 
+        Log.d(TrendingSelectionCustomAdapter.TAG, newsSource.getName() + Integer.toString(newsSource.getPriority()));
+
         return convertView;
 
     }
@@ -115,7 +118,6 @@ public class NewsSelectionCustomAdapter extends ArrayAdapter<NewsSource> impleme
         public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
             NewsSource newsSource = getItem(mSpinnerPosition);
             newsSource.setPriority((Integer) matchPriority((String) arg0.getItemAtPosition(arg2)));
-            newsSource.setSelected(true);
         }
 
         @Override

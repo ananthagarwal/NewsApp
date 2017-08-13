@@ -2,16 +2,20 @@ package com.example.news;
 
 import android.graphics.drawable.Drawable;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+
 /**
  * Created by ananthagarwal on 8/7/17.
  */
 
-public class NewsSource {
+public class NewsSource implements Comparable<NewsSource>{
 
     String name;
     String logoLink;
     boolean selected;
     int priority;
+    static ArrayList<NewsSource> sortedNewsSources;
 
     public NewsSource(String name, String logoLink) {
         this.name = name;
@@ -38,5 +42,22 @@ public class NewsSource {
 
     public String getLogoLink() {
         return logoLink;
+    }
+
+    public int getPriority() {
+        return priority;
+    }
+
+    @Override
+    public int compareTo(NewsSource o1) {
+        return this.getPriority() - o1.getPriority();
+    }
+
+    public static void setSortedNewsSources(ArrayList<NewsSource> sortedNewsSources) {
+        NewsSource.sortedNewsSources = sortedNewsSources;
+    }
+
+    public static ArrayList<NewsSource> getSortedNewsSources() {
+        return sortedNewsSources;
     }
 }

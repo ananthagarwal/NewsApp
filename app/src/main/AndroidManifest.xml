@@ -45,7 +45,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".MainActivity" />
-        <activity android:name=".NewsSelection"></activity>
+        <activity android:name=".NewsSelection" />
+        <activity android:name=".FindArticles"></activity>
     </application>
 
 </manifest>

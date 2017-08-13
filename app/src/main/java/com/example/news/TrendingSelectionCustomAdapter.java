@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,7 @@ import java.util.HashMap;
 public class TrendingSelectionCustomAdapter extends ArrayAdapter<TrendingObj> implements View.OnClickListener{
 
     private ArrayList<TrendingObj> dataBase;
+    public static String TAG = "NewsApp";
     private Context mContext;
     private static LayoutInflater inflater = null;
     private MainActivity mainActivity;
@@ -76,6 +78,16 @@ public class TrendingSelectionCustomAdapter extends ArrayAdapter<TrendingObj> im
         }
         viewHolder.trending.setText(trendingObj.getName());
         viewHolder.tweetVolume.setText(trendingObj.getTweetVolume());
+        viewHolder.findArticles.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TrendingObj t = (TrendingObj) v.getTag();
+                Intent intent = new Intent(getContext(), FindArticles.class);
+                intent.putExtra("Subject", t);
+                getContext().startActivity(intent);
+            }
+        });
+        viewHolder.findArticles.setTag(trendingObj);
 
         return convertView;
 
