@@ -27,14 +27,17 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 
 public class FindArticles extends AppCompatActivity {
 
     TrendingObj trendingObj;
     String trendObjName;
     TextView reminder;
-    ArrayList<NewsSource> newsSources;
+    List<NewsSource> newsSources;
     ApiClient defaultClient;
+    ArrayList<Article> articles;
+    List<String> sourceNames;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,13 +53,23 @@ public class FindArticles extends AppCompatActivity {
         Intent intent = getIntent();
         trendingObj = intent.getParcelableExtra("Subject");
         trendObjName = removeHashtag(trendingObj.getName());
+        articles = new ArrayList<>();
 
         String url = "https://newsapi.org/v1/articles?source=the-new-york-times&sortBy=top&apiKey=1ee07b935e3145039b09ca71535421a0";
         new RetrieveNewsArticles().execute(url);
     }
 
-    public ArrayList<NewsSource> filter(ArrayList<NewsSource> original) {
-        
+    public List<NewsSource> filter(ArrayList<NewsSource> original) {
+        for (NewsSource source: original) {
+            if (source.getPriority() != 0) {
+                original.remove(source);
+            }
+        }
+        sourceNames = new ArrayList<>();
+        for (NewsSource source: original) {
+            sourceNames.add(source.getName());
+        }
+        return original;
     }
 
     public String removeHashtag(String original) {
@@ -64,6 +77,15 @@ public class FindArticles extends AppCompatActivity {
             original = original.substring(1);
         }
         return original;
+    }
+
+    public NewsSource findNewsSource(ArrayList<NewsSource> original, String name) {
+        for (NewsSource news: original) {
+            if (news.getName().equals(name)) {
+                return news;
+            }
+        }
+        return null;
     }
 
     class RetrieveNewsArticles extends AsyncTask<String, Void, Boolean> {
@@ -79,7 +101,7 @@ public class FindArticles extends AppCompatActivity {
                 DefaultApi apiInstance = new DefaultApi();
 
                 StoriesParams.Builder storiesBuilder = StoriesParams.newBuilder();
-                storiesBuilder.setTitle(trendObjName);
+                storiesBuilder.setTitle("Russia");
                 storiesBuilder.setLanguage(Arrays.asList("en"));
                 storiesBuilder.setPublishedAtStart("NOW-7DAYS");
                 storiesBuilder.setSourceName(Arrays.asList("BBC"));
@@ -88,6 +110,11 @@ public class FindArticles extends AppCompatActivity {
                     Stories result = apiInstance.listStories(storiesBuilder.build());
                     for (Iterator<Story> i = result.getStories().iterator(); i.hasNext();){
                         Story story = i.next();
+                        System.out.println(story.getMedia().toString());
+//                        //Article newArticle = new Article(story.getTitle(), findNewsSource((ArrayList) newsSources,
+//                                story.getSource().getName()), story.getSummary().toString(), story.getLinks().getPermalink(),
+//                                story.getMedia())
+
                         System.out.println(story.toString());
                     }
                 } catch (ApiException e) {
