@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.media.Image;
+import android.os.AsyncTask;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +21,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.Exchanger;
 
 /**
  * Created by ananthagarwal on 8/13/17.
@@ -30,7 +32,7 @@ public class FindArticlesCustomAdapter extends ArrayAdapter<Article>{
     private ArrayList<Article> dataBase;
     private Context mContext;
     private static LayoutInflater inflater = null;
-    private Article articleSelection;
+    private FindArticles findArticles;
 
     public static class ViewHolder {
         ImageView articleImage;
@@ -40,12 +42,11 @@ public class FindArticlesCustomAdapter extends ArrayAdapter<Article>{
         Button launch;
     }
 
-    public FindArticlesCustomAdapter(ArrayList<Article> data, Context context, Article article) {
+    public FindArticlesCustomAdapter(ArrayList<Article> data, Context context, FindArticles article) {
         super(context, R.layout.find_article_row_item, data);
         dataBase = data;
         mContext = context;
-        articleSelection = article;
-
+        findArticles = article;
 
     }
 
@@ -81,14 +82,9 @@ public class FindArticlesCustomAdapter extends ArrayAdapter<Article>{
             viewHolder = (FindArticlesCustomAdapter.ViewHolder) convertView.getTag();
             result = convertView;
         }
-        Drawable d = null;
-        try {
-            InputStream is = (InputStream) new URL(article.getUrlToImage()).getContent();
-            d = Drawable.createFromStream(is, "src name");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        viewHolder.articleImage.setImageDrawable(d);
+        RetrieveImage retrieveImage = new RetrieveImage();
+        retrieveImage.execute(article.getUrlToImage());
+        viewHolder.articleImage.setImageDrawable(retrieveImage.getDrawable());
         viewHolder.newsSourceName.setText(article.getSource().getName());
         viewHolder.title.setText(article.getTitle());
         viewHolder.summary.setText(article.getSummary());
@@ -104,7 +100,24 @@ public class FindArticlesCustomAdapter extends ArrayAdapter<Article>{
         viewHolder.launch.setTag(article);
 
         return convertView;
+    }
 
+    class RetrieveImage extends AsyncTask<String, Void, Boolean> {
+        Drawable d;
+        protected Boolean doInBackground(String... urls) {
+            try {
+                InputStream is = (InputStream) new URL(urls[0]).getContent();
+                d = Drawable.createFromStream(is, "src name");
+                return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+
+        public Drawable getDrawable() {
+            return d;
+        }
     }
 
 }

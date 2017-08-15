@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.aylien.newsapi.ApiClient;
@@ -34,15 +35,18 @@ public class FindArticles extends AppCompatActivity {
     TrendingObj trendingObj;
     String trendObjName;
     TextView reminder;
-    List<NewsSource> newsSources;
+    ArrayList<NewsSource> newsSources;
     ApiClient defaultClient;
     ArrayList<Article> articles;
     List<String> sourceNames;
+    FindArticlesCustomAdapter adapter;
+    ListView listView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_find_articles);
         reminder = (TextView) findViewById(R.id.reminder);
+        sourceNames = new ArrayList<>();
         newsSources = filter(NewsSource.getSortedNewsSources());
         if (newsSources == null) {
             reminder.setVisibility(View.VISIBLE);
@@ -55,19 +59,24 @@ public class FindArticles extends AppCompatActivity {
         trendObjName = removeHashtag(trendingObj.getName());
         articles = new ArrayList<>();
 
+        listView = (ListView) findViewById(R.id.articles);
+        adapter = new FindArticlesCustomAdapter(articles, getApplicationContext(), this);
+        listView.setAdapter(adapter);
+
         String url = "https://newsapi.org/v1/articles?source=the-new-york-times&sortBy=top&apiKey=1ee07b935e3145039b09ca71535421a0";
         new RetrieveNewsArticles().execute(url);
     }
 
-    public List<NewsSource> filter(ArrayList<NewsSource> original) {
-        for (NewsSource source: original) {
-            if (source.getPriority() != 0) {
-                original.remove(source);
+    public ArrayList<NewsSource> filter(ArrayList<NewsSource> original) {
+        Iterator<NewsSource> iter = original.iterator();
+
+        while (iter.hasNext()) {
+            NewsSource newsSource = iter.next();
+            if (newsSource.getPriority() == 0) {
+                iter.remove();
+            } else {
+                sourceNames.add(newsSource.getName());
             }
-        }
-        sourceNames = new ArrayList<>();
-        for (NewsSource source: original) {
-            sourceNames.add(source.getName());
         }
         return original;
     }
@@ -101,21 +110,27 @@ public class FindArticles extends AppCompatActivity {
                 DefaultApi apiInstance = new DefaultApi();
 
                 StoriesParams.Builder storiesBuilder = StoriesParams.newBuilder();
-                storiesBuilder.setTitle("Russia");
+                storiesBuilder.setTitle(trendObjName);
                 storiesBuilder.setLanguage(Arrays.asList("en"));
                 storiesBuilder.setPublishedAtStart("NOW-7DAYS");
-                storiesBuilder.setSourceName(Arrays.asList("BBC"));
+                storiesBuilder.setSourceName(sourceNames);
 
                 try {
                     Stories result = apiInstance.listStories(storiesBuilder.build());
                     for (Iterator<Story> i = result.getStories().iterator(); i.hasNext();){
                         Story story = i.next();
-                        System.out.println(story.getMedia().toString());
-//                        //Article newArticle = new Article(story.getTitle(), findNewsSource((ArrayList) newsSources,
-//                                story.getSource().getName()), story.getSummary().toString(), story.getLinks().getPermalink(),
-//                                story.getMedia())
+                        final Article newArticle = new Article(story.getTitle(), findNewsSource(newsSources,
+                                story.getSource().getName()), story.getSummary().toString(), story.getLinks().getPermalink(),
+                                story.getMedia().get(0).getUrl());
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                final Article a = newArticle;
+                                articles.add(a);
+                                adapter.notifyDataSetChanged();
+                            }
+                        });
 
-                        System.out.println(story.toString());
                     }
                 } catch (ApiException e) {
                     System.err.println("Exception when calling DefaultApi#listStories");

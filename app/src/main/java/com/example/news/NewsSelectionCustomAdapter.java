@@ -99,6 +99,7 @@ public class NewsSelectionCustomAdapter extends ArrayAdapter<NewsSource> impleme
                 .getIdentifier(newsSource.getLogoLink(),"drawable", mContext.getPackageName()));
         viewHolder.priority.setAdapter(arrayAdapter);
         viewHolder.priority.setOnItemSelectedListener(new YourSpinnerListener(position));
+        viewHolder.priority.setSelection(newsSource.getPriority());
 
         Log.d(TrendingSelectionCustomAdapter.TAG, newsSource.getName() + Integer.toString(newsSource.getPriority()));
 

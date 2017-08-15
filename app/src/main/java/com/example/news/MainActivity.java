@@ -156,13 +156,14 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 tweetVolume = trendingObj.getInt("tweet_volume");
             }
-            TrendingObj trending = new TrendingObj(trendingObj.getString("name"), trendingObj.getString("url"),
+            final TrendingObj trending = new TrendingObj(trendingObj.getString("name"), trendingObj.getString("url"),
                    trendingObj.getString("promoted_content"), trendingObj.getString("query"),
                    tweetVolume);
-            trendingObjArrayList.add(trending);
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    final TrendingObj t = trending;
+                    trendingObjArrayList.add(t);
                     trendingSelectionCustomAdapter.notifyDataSetChanged();
 
                 }
