@@ -3,6 +3,7 @@ package com.example.news;
 import android.graphics.drawable.Drawable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 
 /**
@@ -22,6 +23,8 @@ public class NewsSource implements Comparable<NewsSource>{
         this.logoLink = logoLink;
         selected = false;
         priority = 0;
+//        sortedNewsSources.add(this);
+//        Collections.sort(sortedNewsSources);
     }
 
     public void setSelected(boolean selected) {

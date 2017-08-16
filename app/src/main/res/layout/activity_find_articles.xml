@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/fragment_container"
     tools:context="com.example.news.FindArticles">
 
     <TextView
@@ -18,11 +19,11 @@
 
     <ListView
         android:id="@+id/articles"
-        android:layout_width="354dp"
-        android:layout_height="484dp"
+        android:layout_width="294dp"
+        android:layout_height="189dp"
         android:layout_marginLeft="16dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="2dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 </android.support.constraint.ConstraintLayout>

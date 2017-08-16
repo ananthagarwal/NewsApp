@@ -1,11 +1,18 @@
 package com.example.news;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.AsyncTask;
+
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -19,6 +26,7 @@ import com.aylien.newsapi.models.Story;
 import com.aylien.newsapi.parameters.StoriesParams;
 
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -41,6 +49,10 @@ public class FindArticles extends AppCompatActivity {
     List<String> sourceNames;
     FindArticlesCustomAdapter adapter;
     ListView listView;
+    FragmentManager fragmentManager;
+    FragmentTransaction fragmentTransaction;
+    ArticleViewFragment fragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,6 +70,11 @@ public class FindArticles extends AppCompatActivity {
         trendingObj = intent.getParcelableExtra("Subject");
         trendObjName = removeHashtag(trendingObj.getName());
         articles = new ArrayList<>();
+
+        fragmentManager = getFragmentManager();
+
+        fragment = new ArticleViewFragment();
+
 
         listView = (ListView) findViewById(R.id.articles);
         adapter = new FindArticlesCustomAdapter(articles, getApplicationContext(), this);
@@ -95,6 +112,16 @@ public class FindArticles extends AppCompatActivity {
             }
         }
         return null;
+    }
+
+    public void launchArticle(Article art) {
+
+        fragmentTransaction = fragmentManager.beginTransaction();
+
+        fragmentTransaction.add(R.id.fragment_container, fragment);
+        fragmentTransaction.commit();
+
+
     }
 
     class RetrieveNewsArticles extends AsyncTask<String, Void, Boolean> {
@@ -163,5 +190,27 @@ public class FindArticles extends AppCompatActivity {
                 return false;
             }
         }
+    }
+
+    public static class ArticleViewFragment extends Fragment {
+        WebView webView;
+        View view;
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                                 Bundle savedInstanceState) {
+            // Inflate the layout for this fragment
+
+            view = inflater.inflate(R.layout.article_fragment, container, false);
+            webView = (WebView) view.findViewById(R.id.webView);
+            webView.loadUrl("www.outlook.com");
+            return view;
+        }
+
+        public void loadPage(Article art) {
+
+        }
+
+
     }
 }
