@@ -3,7 +3,9 @@ package com.example.news;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 
 import android.support.v7.app.AppCompatActivity;
@@ -12,9 +14,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.aylien.newsapi.ApiClient;
 import com.aylien.newsapi.ApiException;
@@ -195,6 +202,8 @@ public class FindArticles extends AppCompatActivity {
     public static class ArticleViewFragment extends Fragment {
         WebView webView;
         View view;
+        ProgressDialog progressDialog;
+
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -202,10 +211,35 @@ public class FindArticles extends AppCompatActivity {
             // Inflate the layout for this fragment
 
             view = inflater.inflate(R.layout.article_fragment, container, false);
+//            progressDialog = ProgressDialog.show(getActivity(), "Loading","Please wait...", true);
+//            progressDialog.setCancelable(false);
+//            progressDialog.show();
             webView = (WebView) view.findViewById(R.id.webView);
-            webView.loadUrl("www.outlook.com");
+            webView.getSettings().setJavaScriptEnabled(true);
+            webView.getSettings().setLoadWithOverviewMode(true);
+            webView.getSettings().setDomStorageEnabled(true);
+            webView.getSettings().setUseWideViewPort(true);
+            WebSettings webSettings = webView.getSettings();
+
+            webView.setWebViewClient(new MyCustomWebViewClient());
+            webView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
+
+            webView.loadUrl("https://www.espn.com");
             return view;
+
+
+            //mainWebView.loadUrl("http://mobile-sample-app.heroku.com");
         }
+
+        private class MyCustomWebViewClient extends WebViewClient {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                view.loadUrl(url);
+                return true;
+            }
+        }
+
+
 
         public void loadPage(Article art) {
 
