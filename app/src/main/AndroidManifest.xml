@@ -48,7 +48,8 @@
         </activity>
         <activity android:name=".MainActivity" />
         <activity android:name=".NewsSelection" />
-        <activity android:name=".FindArticles"></activity>
+        <activity android:name=".FindArticles" />
+        <activity android:name=".TweetSearch"></activity>
     </application>
 
 </manifest>

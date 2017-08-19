@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
     TwitterLoginButton loginButton;
     TwitterSession twitterSession;
     TwitterApiClient twitterApiClient;
-    String token; String secret; String header;
+    static String token; static String secret; static String header;
     String url = "https://api.twitter.com/1.1/trends/place.json?id=1";
     JSONObject twitterTrendsObj;
     ArrayList<TrendingObj> trendingObjArrayList = new ArrayList<>();
@@ -128,9 +128,11 @@ public class MainActivity extends AppCompatActivity {
         percentEncoding.put('/', "%2F"); percentEncoding.put('=', "%3D");
     }
 
-    public static String percentEncode(String original) {
+    public static String percentEncode(String original, boolean removeNewLine) {
         String answer = "";
-        original = original.substring(0, original.length() - 1);
+        if (removeNewLine) {
+            original = original.substring(0, original.length() - 1);
+        }
         for (int i = 0; i < original.length(); i++) {
             if (percentEncoding.containsKey(original.charAt(i))) {
                 answer = answer + percentEncoding.get(original.charAt(i));
@@ -146,10 +148,10 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(intent, SELECT_NEWS);
     }
 
-    private String accessRestAPI(String url) {
+    public static String accessRestAPI(String url) {
 
         String unixTime = Long.toString(System.currentTimeMillis() / 1000L);
-        String consumerKey = getString(R.string.com_twitter_sdk_android_CONSUMER_KEY);
+        String consumerKey = "8offNEtRlkvLzjzg7mb7HKKmS";
         String nonce = "kYjzNBV8Y0ZFnhxSebBDvY3uYSQ2iaomaeew2VS4dg";
         String signature = "GET&https%3A%2F%2Fapi.twitter.com%2F1.1%2Ftrends%2Fplace.json&id%3D1%26" +
                 "oauth_consumer_key%3D"+ consumerKey +"%26oauth_nonce%3D" + nonce +
@@ -158,10 +160,10 @@ public class MainActivity extends AppCompatActivity {
 
         String signingKey = "TCyar7WDr0JEXm4zBQ36BIUpo3g6RHbCyFIJHYUxIfnMdHu5Qv&" + secret;
         String oauthsig = Base64.encodeToString(HmacUtils.hmacSha1(signingKey, signature), Base64.DEFAULT);
-        Log.d(TAG, oauthsig);
-        Log.d(TAG, Integer.toString(oauthsig.length()));
-        oauthsig = percentEncode(oauthsig);
-        Log.d(TAG, oauthsig);
+        //Log.d(TAG, oauthsig);
+        //Log.d(TAG, Integer.toString(oauthsig.length()));
+        oauthsig = percentEncode(oauthsig, true);
+        //Log.d(TAG, oauthsig);
         String head = "OAuth oauth_consumer_key=\""+consumerKey+"\", oauth_nonce=\"" + nonce +
                 "\", oauth_signature=\"" + oauthsig + "\", oauth_signature_method=\"HMAC-SHA1\", oauth_timestamp" +
                 "=\"" + unixTime + "\", oauth_token=\"" + token + "\", oauth_version=\"1.0\"";

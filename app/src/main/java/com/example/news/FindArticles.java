@@ -208,6 +208,13 @@ public class FindArticles extends AppCompatActivity {
         fragment.setArguments(bundle);
     }
 
+    public void searchTweet(View view) {
+        Intent intent = new Intent(this, TweetSearch.class);
+        intent.putExtra("Subject", trendObjName);
+        startActivity(intent);
+    }
+
+
 
 
     public static class ArticleViewFragment extends Fragment implements View.OnClickListener {
@@ -226,9 +233,9 @@ public class FindArticles extends AppCompatActivity {
             // Inflate the layout for this fragment
             savedArticleTableHelper = new SavedArticleTableHelper(getActivity().getApplicationContext());
             view = inflater.inflate(R.layout.article_fragment, container, false);
-            progressDialog = ProgressDialog.show(getActivity(), "Loading","Please wait...", true);
-            progressDialog.setCancelable(false);
-            progressDialog.show();
+//            progressDialog = ProgressDialog.show(getActivity(), "Loading","Please wait...", true);
+//            progressDialog.setCancelable(false);
+//            progressDialog.show();
             button = (Button) view.findViewById(R.id.save);
             webView = (WebView) view.findViewById(R.id.webView);
             webView.getSettings().setJavaScriptEnabled(true);
@@ -275,7 +282,7 @@ public class FindArticles extends AppCompatActivity {
 
             @Override
             public void onPageFinished(WebView view, String url) {
-                progressDialog.dismiss();
+                //progressDialog.dismiss();
 
             }
 

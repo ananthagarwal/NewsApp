@@ -29,19 +29,18 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     // Include all the Twitter APIs
+
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.facebook.android:facebook-android-sdk:[4,5)'
     compile 'com.twitter.sdk.android:twitter:3.0.0'
     compile 'commons-codec:commons-codec:1.10'
     compile 'com.aylien.newsapi:client:0.4.0'
-
     testCompile 'junit:junit:4.12'
-
-
 }
 
-android{
+
+android {
     packagingOptions {
         pickFirst 'META-INF/INDEX.LIST'
         pickFirst 'META-INF/LICENSE'
