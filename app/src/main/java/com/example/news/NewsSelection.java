@@ -1,5 +1,6 @@
 package com.example.news;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -22,9 +23,8 @@ public class NewsSelection extends AppCompatActivity {
     NewsSelectionCustomAdapter adapter;
     ListView newsSelectionListView;
     ArrayList<NewsSource> newsSources;
-    SharedPreferences sharedPreferences;
-    SharedPreferences.Editor editor;
     NewsSourceTableHelper mDbHelper;
+    static ArrayList<NewsSource> sortedNewsSources;
     SQLiteDatabase db;
 
     @Override
@@ -32,50 +32,56 @@ public class NewsSelection extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news_selection);
 
+        mDbHelper = new NewsSourceTableHelper(getApplicationContext());
+        db = mDbHelper.getWritableDatabase();
+
         newsSources = initializeNewsSources();
-        sharedPreferences = getPreferences(Context.MODE_PRIVATE);
-        editor = sharedPreferences.edit();
 
         adapter = new NewsSelectionCustomAdapter(newsSources, getApplicationContext(), this);
         newsSelectionListView = (ListView) findViewById(R.id.newsSelection);
         newsSelectionListView.setAdapter(adapter);
 
 
-        int exists = sharedPreferences.getInt(newsSources.get(0).getName(), Integer.MIN_VALUE);
-        if (exists != Integer.MIN_VALUE) {
-            for (NewsSource newsSource : newsSources) {
-                newsSource.setPriority(sharedPreferences.getInt(newsSource.getName(), 0));
-            }
-        }
-
-        mDbHelper = new NewsSourceTableHelper(getApplicationContext());
     }
 
     public ArrayList<NewsSource> initializeNewsSources() {
         ArrayList<NewsSource> result = new ArrayList<>();
         newsArray = getApplicationContext().getResources().getStringArray(R.array.newsSources);
         logoImages = getApplicationContext().getResources().getStringArray(R.array.newsLogos);
-
-        for (int i = 0; i < newsArray.length; i++) {
-            result.add(new NewsSource(newsArray[i], logoImages[i]));
+        if (tableExists()) {
+            db = mDbHelper.getReadableDatabase();
+            Cursor mCursor = db.rawQuery("SELECT * FROM " + NewsSourceTable.NewsEntry.TABLE_NAME, null);
+            while(mCursor.moveToNext()) {
+                result.add(new NewsSource(mCursor.getString(mCursor.getColumnIndex(NewsSourceTable.NewsEntry.COLUMN_NAME_NAME)),
+                                mCursor.getString(mCursor.getColumnIndex(NewsSourceTable.NewsEntry.COLUMN_NAME_LOGOLINK)),
+                        Integer.parseInt(mCursor.getString(mCursor.getColumnIndex(NewsSourceTable.NewsEntry.COLUMN_NAME_PRIORITY)))));
+            }
+        } else {
+            for (int i = 0; i < newsArray.length; i++) {
+                result.add(new NewsSource(newsArray[i], logoImages[i], 0));
+            }
         }
+
         return result;
     }
 
-    public void done(View view) {
-        Collections.sort(newsSources);
-        db = mDbHelper.getWritableDatabase();
+    public boolean tableExists() {
         Cursor mCursor = db.rawQuery("SELECT * FROM " + NewsSourceTable.NewsEntry.TABLE_NAME, null);
-        if (!mCursor.moveToFirst()) {
+        return mCursor.moveToFirst();
+    }
+
+    public void done(View view) {
+
+        db = mDbHelper.getWritableDatabase();
+        if (!tableExists()) {
             createTable();
         } else {
             updateTable();
         }
-        for (NewsSource newsSource: newsSources) {
-            editor.putInt(newsSource.getName(), newsSource.getPriority());
-            editor.commit();
-        }
-        NewsSource.setSortedNewsSources(newsSources);
+        Collections.sort(newsSources);
+        sortedNewsSources = newsSources;
+        Intent returnIntent = new Intent();
+        setResult(Activity.RESULT_OK, returnIntent);
         finish();
     }
 
@@ -89,7 +95,19 @@ public class NewsSelection extends AppCompatActivity {
         }
     }
     public void updateTable() {
-        Log.d(TrendingSelectionCustomAdapter.TAG, "HeLLLLLOOOOOOOO");
+        for (NewsSource newsSource : newsSources) {
+            ContentValues values = new ContentValues();
+            values.put(NewsSourceTable.NewsEntry.COLUMN_NAME_PRIORITY, Integer.toString(newsSource.getPriority()));
+
+            String selection = NewsSourceTable.NewsEntry.COLUMN_NAME_NAME + " LIKE ?";
+            String[] selectionArgs = { newsSource.getName() };
+
+            db.update(NewsSourceTable.NewsEntry.TABLE_NAME,
+                    values,
+                    selection,
+                    selectionArgs);
+        }
+
     }
 
  }

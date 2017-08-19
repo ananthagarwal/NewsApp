@@ -4,7 +4,9 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.AsyncTask;
 
@@ -19,6 +21,7 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -67,7 +70,7 @@ public class FindArticles extends AppCompatActivity {
         setContentView(R.layout.activity_find_articles);
         reminder = (TextView) findViewById(R.id.reminder);
         sourceNames = new ArrayList<>();
-        newsSources = filter(NewsSource.getSortedNewsSources());
+        newsSources = filter(NewsSelection.sortedNewsSources);
         if (newsSources == null) {
             reminder.setVisibility(View.VISIBLE);
             reminder.setText("Don't Forget to Set Your News Source Preferences First!");
@@ -78,7 +81,6 @@ public class FindArticles extends AppCompatActivity {
         trendingObj = intent.getParcelableExtra("Subject");
         trendObjName = removeHashtag(trendingObj.getName());
         articles = new ArrayList<>();
-
         fragmentManager = getFragmentManager();
 
         fragment = new ArticleViewFragment();
@@ -119,7 +121,7 @@ public class FindArticles extends AppCompatActivity {
                 return news;
             }
         }
-        return null;
+        return new NewsSource(name, "", 0);
     }
 
     public void launchArticle() {
@@ -202,25 +204,32 @@ public class FindArticles extends AppCompatActivity {
     public void setArticle(Article art) {
         selectedArticle = art;
         Bundle bundle = new Bundle();
-        bundle.putString("url", selectedArticle.getUrl());
+        bundle.putParcelable("Article", art);
         fragment.setArguments(bundle);
     }
 
-    public static class ArticleViewFragment extends Fragment {
+
+
+    public static class ArticleViewFragment extends Fragment implements View.OnClickListener {
         WebView webView;
         View view;
         ProgressDialog progressDialog;
+        SavedArticleTableHelper savedArticleTableHelper;
+        SQLiteDatabase db;
+        Article article;
+        Button button;
 
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             // Inflate the layout for this fragment
-
+            savedArticleTableHelper = new SavedArticleTableHelper(getActivity().getApplicationContext());
             view = inflater.inflate(R.layout.article_fragment, container, false);
             progressDialog = ProgressDialog.show(getActivity(), "Loading","Please wait...", true);
             progressDialog.setCancelable(false);
             progressDialog.show();
+            button = (Button) view.findViewById(R.id.save);
             webView = (WebView) view.findViewById(R.id.webView);
             webView.getSettings().setJavaScriptEnabled(true);
             webView.getSettings().setLoadWithOverviewMode(true);
@@ -232,14 +241,30 @@ public class FindArticles extends AppCompatActivity {
             webView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
 
             Bundle bundle = getArguments();
-            String url = bundle.getString("url");
+            article = bundle.getParcelable("Article");
+            String url = article.getUrl();
+
+            button.setOnClickListener(this);
 
             webView.loadUrl(url);
             return view;
 
         }
 
+        @Override
+        public void onClick(View v) {
+            db = savedArticleTableHelper.getWritableDatabase();
+            ContentValues values = new ContentValues();
+            values.put(SavedArticleTable.ArticleEntry.COLUMN_NAME_TITLE, article.getTitle());
+            values.put(SavedArticleTable.ArticleEntry.COLUMN_NAME_SOURCE, article.getSource().getName());
+            values.put(SavedArticleTable.ArticleEntry.COLUMN_NAME_SUMMARY, article.getSummary());
+            values.put(SavedArticleTable.ArticleEntry.COLUMN_NAME_URL, article.getUrl());
+            values.put(SavedArticleTable.ArticleEntry.COLUMN_NAME_IMAGE_URL, article.getUrlToImage());
 
+            // Insert the new row, returning the primary key value of the new row
+            db.insert(SavedArticleTable.ArticleEntry.TABLE_NAME, null, values);
+            Toast.makeText(getActivity(), "Saved Article!", Toast.LENGTH_LONG).show();
+        }
 
         private class MyCustomWebViewClient extends WebViewClient {
             @Override
@@ -257,5 +282,8 @@ public class FindArticles extends AppCompatActivity {
         }
 
 
+
     }
+
+
 }

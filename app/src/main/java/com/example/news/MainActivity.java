@@ -1,6 +1,8 @@
 package com.example.news;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -38,7 +40,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     public String TAG = "Twitter Main Activity";
-    HashMap<Character, String> percentEncoding;
+    static HashMap<Character, String> percentEncoding;
     TwitterLoginButton loginButton;
     TwitterSession twitterSession;
     TwitterApiClient twitterApiClient;
@@ -48,6 +50,10 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<TrendingObj> trendingObjArrayList = new ArrayList<>();
     TextView encourage;
     TrendingSelectionCustomAdapter trendingSelectionCustomAdapter;
+    SavedArticleTableHelper savedArticleTableHelper;
+    SQLiteDatabase db;
+    ArrayList<Article> savedArticles;
+    FindArticlesCustomAdapter adapter;
 
     static final int SELECT_NEWS = 1;
 
@@ -67,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
         trendingSelectionCustomAdapter = new TrendingSelectionCustomAdapter(trendingObjArrayList,
                 getApplicationContext(), this);
         listView.setAdapter(trendingSelectionCustomAdapter);
+        savedArticleTableHelper = new SavedArticleTableHelper(getApplicationContext());
 
         loginButton.setCallback(new Callback<TwitterSession>() {
             @Override
@@ -94,6 +101,23 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    public void loadSavedArticles(View view) {
+        savedArticles = new ArrayList<>();
+        db = savedArticleTableHelper.getReadableDatabase();
+        Cursor mCursor = db.rawQuery("SELECT * FROM " + SavedArticleTable.ArticleEntry.TABLE_NAME, null);
+        while(mCursor.moveToNext()) {
+            savedArticles.add(new Article(mCursor.getString(mCursor.getColumnIndex(SavedArticleTable.ArticleEntry.COLUMN_NAME_TITLE)),
+                    new NewsSource(mCursor.getString(mCursor.getColumnIndex(SavedArticleTable.ArticleEntry.COLUMN_NAME_SOURCE)), "", 0),
+                    mCursor.getString(mCursor.getColumnIndex(SavedArticleTable.ArticleEntry.COLUMN_NAME_SUMMARY)),
+                    mCursor.getString(mCursor.getColumnIndex(SavedArticleTable.ArticleEntry.COLUMN_NAME_URL)),
+                    mCursor.getString(mCursor.getColumnIndex(SavedArticleTable.ArticleEntry.COLUMN_NAME_IMAGE_URL))));
+        }
+        adapter = new FindArticlesCustomAdapter(savedArticles, getApplicationContext(), this);
+        listView.setAdapter(adapter);
+
+    }
+
+
     private void generateHashMap() {
         percentEncoding = new HashMap<>();
         percentEncoding.put(' ', "%20"); percentEncoding.put('!', "%21"); percentEncoding.put('\"', "%22");
@@ -104,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
         percentEncoding.put('/', "%2F"); percentEncoding.put('=', "%3D");
     }
 
-    private String percentEncode(String original) {
+    public static String percentEncode(String original) {
         String answer = "";
         original = original.substring(0, original.length() - 1);
         for (int i = 0; i < original.length(); i++) {

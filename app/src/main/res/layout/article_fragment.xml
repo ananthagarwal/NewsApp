@@ -1,17 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:weightSum="1">
 
     <WebView
         android:id="@+id/webView"
-        android:layout_width="318dp"
+        android:layout_width="match_parent"
         android:layout_height="289dp"
-        android:visibility="visible" />
+        android:visibility="visible"
+        android:layout_weight="0.70" />
 
-    <TextView
-        android:id="@+id/textView3"
+    <Button
+        android:id="@+id/save"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="TextView" />
+        android:layout_weight="0.10"
+        android:text="Save" />
+
 </LinearLayout>

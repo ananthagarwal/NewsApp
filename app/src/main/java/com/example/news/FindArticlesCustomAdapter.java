@@ -33,6 +33,7 @@ public class FindArticlesCustomAdapter extends ArrayAdapter<Article>{
     private Context mContext;
     private static LayoutInflater inflater = null;
     private FindArticles findArticles;
+    private MainActivity mainActivity;
 
     public static class ViewHolder {
         ImageView articleImage;
@@ -48,6 +49,13 @@ public class FindArticlesCustomAdapter extends ArrayAdapter<Article>{
         mContext = context;
         findArticles = article;
 
+    }
+
+    public FindArticlesCustomAdapter(ArrayList<Article> data, Context context, MainActivity article) {
+        super(context, R.layout.find_article_row_item, data);
+        dataBase = data;
+        mContext = context;
+        mainActivity = article;
     }
 
 //    @Override

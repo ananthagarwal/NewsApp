@@ -25,10 +25,7 @@ public class HomePage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_page);
         Twitter.initialize(this);
-        NewsSourceTableHelper mDbHelper = new NewsSourceTableHelper(getApplicationContext());
 
-        SQLiteDatabase db = mDbHelper.getWritableDatabase();
-        db.delete(NewsSourceTable.NewsEntry.TABLE_NAME, null, null);
     }
 
     public void getStarted(View view) {

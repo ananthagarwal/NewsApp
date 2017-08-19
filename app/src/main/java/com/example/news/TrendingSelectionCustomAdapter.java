@@ -18,6 +18,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 
 /**
@@ -88,6 +90,9 @@ public class TrendingSelectionCustomAdapter extends ArrayAdapter<TrendingObj> im
             @Override
             public void onClick(View v) {
                 TrendingObj t = (TrendingObj) v.getTag();
+                if (NewsSelection.sortedNewsSources == null) {
+                    readTable();
+                }
                 Intent intent = new Intent(getContext(), FindArticles.class);
                 intent.putExtra("Subject", t);
                 getContext().startActivity(intent);
@@ -104,6 +109,18 @@ public class TrendingSelectionCustomAdapter extends ArrayAdapter<TrendingObj> im
 
         return convertView;
 
+    }
+
+    public void readTable() {
+        ArrayList<NewsSource> result = new ArrayList<>();
+        Cursor mCursor = db.rawQuery("SELECT * FROM " + NewsSourceTable.NewsEntry.TABLE_NAME, null);
+        while(mCursor.moveToNext()) {
+            result.add(new NewsSource(mCursor.getString(mCursor.getColumnIndex(NewsSourceTable.NewsEntry.COLUMN_NAME_NAME)),
+                    mCursor.getString(mCursor.getColumnIndex(NewsSourceTable.NewsEntry.COLUMN_NAME_LOGOLINK)),
+                    Integer.parseInt(mCursor.getString(mCursor.getColumnIndex(NewsSourceTable.NewsEntry.COLUMN_NAME_PRIORITY)))));
+        }
+        Collections.sort(result);
+        NewsSelection.sortedNewsSources = result;
     }
 
 }
