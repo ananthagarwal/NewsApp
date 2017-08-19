@@ -2,6 +2,8 @@ package com.example.news;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -29,6 +31,8 @@ public class TrendingSelectionCustomAdapter extends ArrayAdapter<TrendingObj> im
     private Context mContext;
     private static LayoutInflater inflater = null;
     private MainActivity mainActivity;
+    NewsSourceTableHelper mDbHelper;
+    SQLiteDatabase db;
 
     public static class ViewHolder {
         TextView trending;
@@ -41,6 +45,8 @@ public class TrendingSelectionCustomAdapter extends ArrayAdapter<TrendingObj> im
         dataBase = data;
         mContext = context;
         mainActivity = m;
+        mDbHelper = new NewsSourceTableHelper(getContext());
+        db = mDbHelper.getReadableDatabase();
     }
 
     @Override
@@ -87,6 +93,13 @@ public class TrendingSelectionCustomAdapter extends ArrayAdapter<TrendingObj> im
                 getContext().startActivity(intent);
             }
         });
+        Cursor mCursor = db.rawQuery("SELECT * FROM " + NewsSourceTable.NewsEntry.TABLE_NAME, null);
+        if (!mCursor.moveToFirst()) {
+            viewHolder.findArticles.setEnabled(false);
+        } else {
+            viewHolder.findArticles.setEnabled(true);
+        }
+
         viewHolder.findArticles.setTag(trendingObj);
 
         return convertView;

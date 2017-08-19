@@ -59,6 +59,7 @@ public class FindArticles extends AppCompatActivity {
     FragmentManager fragmentManager;
     FragmentTransaction fragmentTransaction;
     ArticleViewFragment fragment;
+    Article selectedArticle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,7 +122,7 @@ public class FindArticles extends AppCompatActivity {
         return null;
     }
 
-    public void launchArticle(Article art) {
+    public void launchArticle() {
 
         fragmentTransaction = fragmentManager.beginTransaction();
 
@@ -198,6 +199,12 @@ public class FindArticles extends AppCompatActivity {
             }
         }
     }
+    public void setArticle(Article art) {
+        selectedArticle = art;
+        Bundle bundle = new Bundle();
+        bundle.putString("url", selectedArticle.getUrl());
+        fragment.setArguments(bundle);
+    }
 
     public static class ArticleViewFragment extends Fragment {
         WebView webView;
@@ -211,9 +218,9 @@ public class FindArticles extends AppCompatActivity {
             // Inflate the layout for this fragment
 
             view = inflater.inflate(R.layout.article_fragment, container, false);
-//            progressDialog = ProgressDialog.show(getActivity(), "Loading","Please wait...", true);
-//            progressDialog.setCancelable(false);
-//            progressDialog.show();
+            progressDialog = ProgressDialog.show(getActivity(), "Loading","Please wait...", true);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
             webView = (WebView) view.findViewById(R.id.webView);
             webView.getSettings().setJavaScriptEnabled(true);
             webView.getSettings().setLoadWithOverviewMode(true);
@@ -224,12 +231,15 @@ public class FindArticles extends AppCompatActivity {
             webView.setWebViewClient(new MyCustomWebViewClient());
             webView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
 
-            webView.loadUrl("https://www.espn.com");
+            Bundle bundle = getArguments();
+            String url = bundle.getString("url");
+
+            webView.loadUrl(url);
             return view;
 
-
-            //mainWebView.loadUrl("http://mobile-sample-app.heroku.com");
         }
+
+
 
         private class MyCustomWebViewClient extends WebViewClient {
             @Override
@@ -237,11 +247,12 @@ public class FindArticles extends AppCompatActivity {
                 view.loadUrl(url);
                 return true;
             }
-        }
 
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                progressDialog.dismiss();
 
-
-        public void loadPage(Article art) {
+            }
 
         }
 

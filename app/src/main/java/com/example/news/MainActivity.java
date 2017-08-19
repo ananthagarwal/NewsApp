@@ -211,6 +211,14 @@ public class MainActivity extends AppCompatActivity {
 
         // Pass the activity result to the login button.
         loginButton.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == SELECT_NEWS) {
+            if (resultCode == RESULT_OK) {
+                trendingSelectionCustomAdapter.notifyDataSetChanged();
+            }
+
+        }
+
     }
 }
 

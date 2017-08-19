@@ -92,7 +92,8 @@ public class FindArticlesCustomAdapter extends ArrayAdapter<Article>{
             @Override
             public void onClick(View v) {
                 Article art = (Article) v.getTag();
-                findArticles.launchArticle(art);
+                findArticles.launchArticle();
+                findArticles.setArticle(art);
             }
         });
         viewHolder.launch.setTag(article);

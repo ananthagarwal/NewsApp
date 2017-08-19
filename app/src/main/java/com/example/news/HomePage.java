@@ -1,6 +1,7 @@
 package com.example.news;
 
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -24,6 +25,10 @@ public class HomePage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_page);
         Twitter.initialize(this);
+        NewsSourceTableHelper mDbHelper = new NewsSourceTableHelper(getApplicationContext());
+
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+        db.delete(NewsSourceTable.NewsEntry.TABLE_NAME, null, null);
     }
 
     public void getStarted(View view) {
